@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AI Study Assistant</title>
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="p-3">
+  <h2 class="text-center">📚 AI Study Assistant</h2>
+
+  <input type="file" id="pdf" class="form-control">
+  <button onclick="uploadPDF()" class="btn btn-primary w-100 mt-2">📂 Upload PDF</button>
+
+  <hr>
+
+  <button onclick="callAPI('/summary')" class="btn btn-success w-100 mt-1">📜 Summary</button>
+  <button onclick="callAPI('/mcq')" class="btn btn-warning w-100 mt-1">🧠 MCQ</button>
+  <button onclick="callAPI('/exam')" class="btn btn-info w-100 mt-1">❓ Exam Questions</button>
+
+  <hr>
+
+  <input id="question" class="form-control" placeholder="Ask a doubt...">
+  <button onclick="askQ()" class="btn btn-dark w-100 mt-2">💬 Ask</button>
+
+  <textarea id="output" class="form-control mt-3" rows="12"></textarea>
+
+<script>
+function uploadPDF(){
+  var f = document.getElementById("pdf").files[0]
+  var fd = new FormData()
+  fd.append("file", f)
+  fetch("/upload",{method:"POST", body:fd})
+  .then(r=>r.json()).then(a=>alert(a.msg))
+}
+
+function callAPI(url){
+  fetch(url).then(r=>r.text()).then(data => document.getElementById("output").value = data)
+}
+
+function askQ(){
+  let q = document.getElementById("question").value
+  fetch("/ask",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({q})})
+  .then(r=>r.text()).then(data=>document.getElementById("output").value=data)
+}
+</script>
+</body>
+</html>
